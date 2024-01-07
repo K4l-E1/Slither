@@ -1,8 +1,10 @@
+import javafx.scene.paint.Color;
+
 public class Ia extends Snake {
     Food fruit;
 
-    public Ia(Food f) {
-        super();
+    public Ia(Food f, Color c) {
+        super(c);
         fruit = f;
     }
 

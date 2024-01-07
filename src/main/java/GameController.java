@@ -12,7 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-public class SnakeGameController {
+public class GameController {
 
     private Snake snake;
     private Food food;
@@ -22,13 +22,13 @@ public class SnakeGameController {
     private Ia ia;
     
 
-    public SnakeGameController() {
+    public GameController() {
         root = new Pane();
         root.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
         random = new Random();
         food  = new Food(Color.RED, random.nextInt(750), random.nextInt(500));
-        snake = new Snake();
-        ia = new Ia(food);
+        snake = new Snake(Color.GREEN);
+        ia = new Ia(food, Color.ORANGE);
         end = false;      
     }
 
@@ -46,7 +46,7 @@ public class SnakeGameController {
                     updateScore();
                 });
                 try {
-                    Thread.sleep(80);
+                    Thread.sleep(100);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -90,7 +90,7 @@ public class SnakeGameController {
         }
     
         if (newDirection != -1) {
-            snake.setDirection(newDirection);
+            snake.setDir(newDirection);
         }
     }
 
@@ -101,7 +101,7 @@ public class SnakeGameController {
     private void checkCollision() {
 
         if(ia != null && snakeCollision(snake, ia)){
-            end = true;
+            stopGame();
             resetGame();
         }
         
@@ -139,8 +139,9 @@ public class SnakeGameController {
          Platform.runLater(() -> {
             root.getChildren().clear();
 
-            snake = new Snake();
-            ia = new Ia(food);
+            snake = new Snake(Color.GREEN);
+            ia = new Ia(food, Color.ORANGE);
+            ia.autoMove(food);
             root.getChildren().add(food.getRectangle());
 
             end = false;
@@ -187,7 +188,11 @@ public class SnakeGameController {
             double bodyX = snake2.getBody().get(i).getPoint().x;
             double bodyY = snake2.getBody().get(i).getPoint().y;
     
-            if (head1.getPoint().x == bodyX && head1.getPoint().y == bodyY) {
+            if (
+                head1.getPoint().x >= bodyX - 15 && 
+                head1.getPoint().x <= bodyX + 15 && 
+                head1.getPoint().y >= bodyY - 15 && 
+                head1.getPoint().y <= bodyY + 15 ) {
                 return true;
             }
         }
@@ -197,20 +202,22 @@ public class SnakeGameController {
 
     private void updateScore() {
         root.getChildren().removeIf(node -> node instanceof Text);
-        Text scoreText1 = new Text("Player: " + snake.getCounter());
-        Text scoreText2 = new Text("Ia: " + ia.getCounter());
         
-        scoreText1.setFill(Color.WHITE);
+        Text scoreText1 = new Text("Player: " + snake.getCounter());   
+        scoreText1.setFill(snake.getColor());
         scoreText1.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         scoreText1.setX(700);
         scoreText1.setY(30);
-
-        scoreText2.setFill(Color.WHITE);
-        scoreText2.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        scoreText2.setX(735);
-        scoreText2.setY(60);
-
-        root.getChildren().addAll(scoreText1, scoreText2);
+        root.getChildren().addAll(scoreText1);
+        
+        if(ia != null){
+            Text scoreText2 = new Text("Ia: " + ia.getCounter());
+            scoreText2.setFill(ia.getColor());
+            scoreText2.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+            scoreText2.setX(735);
+            scoreText2.setY(60);
+            root.getChildren().addAll(scoreText2);
+        }
     }
 
 }

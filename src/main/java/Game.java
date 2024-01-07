@@ -3,11 +3,11 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-public class SnakeGame extends Application {
+public class Game extends Application {
 
 
     public void start(Stage primaryStage) {
-     SnakeGameController gc = new SnakeGameController();
+     GameController gc = new GameController();
 
         primaryStage.setTitle("Snake");
         primaryStage.setResizable(false);

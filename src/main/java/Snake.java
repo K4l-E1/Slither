@@ -13,12 +13,22 @@ public class Snake {
     protected int dir = 3;
     private int DISTANCE_AVANCEMENT = 18;
     private int counter = 1;
+    private Color color;
 
 
     public Snake() {
+        color = Color.GREEN;
         Random random = new Random();
         body = new ArrayList<Food>();
-        body.add(new Food(Color.GREEN, random.nextInt(600), random.nextInt(400)));
+        body.add(new Food(color, random.nextInt(600), random.nextInt(400)));
+        snakeHead = body.get(0);
+    }
+
+    public Snake(Color c) {
+        color = c;
+        Random random = new Random();
+        body = new ArrayList<Food>();
+        body.add(new Food(color, random.nextInt(600), random.nextInt(400)));
         snakeHead = body.get(0);
     }
 
@@ -42,6 +52,18 @@ public class Snake {
         this.counter = counter;
     }
 
+    public Color getColor() {
+        return color;
+    }
+
+    public Food getHead() {
+        return snakeHead;
+    }
+
+    public int getDir() {
+        return dir;
+    }
+
     public void draw(Pane root) {        
             for (Food f : body) {
                 drawSnakeRectangle((int) f.getPoint().x, (int) f.getPoint().y, root);
@@ -52,7 +74,7 @@ public class Snake {
         Rectangle rectangle = new Rectangle(x, y, 20, 20);
         rectangle.setArcWidth(30);
         rectangle.setArcHeight(30);
-        rectangle.setFill(Color.GREEN);
+        rectangle.setFill(color);
         root.getChildren().add(rectangle);
     }
 
@@ -79,7 +101,7 @@ public class Snake {
         }
     }
 
-    public void setDirection(int newDir) {
+    public void setDir(int newDir) {
         if ((dir == 0 && newDir != 2) ||  
             (dir == 1 && newDir != 3) || 
             (dir == 2 && newDir != 0) ||
@@ -88,18 +110,14 @@ public class Snake {
         }
     }
 
-    public void grow(Pane root) {
-        if(dir == 0) body.add(new Food(Color.GREEN, body.get(counter-1).getPoint().x, body.get(counter-1).getPoint().y - 20));
-        else if(dir == 1) body.add(new Food(Color.GREEN, body.get(counter-1).getPoint().x + 20, body.get(counter-1).getPoint().y));
-        else if(dir == 2) body.add(new Food(Color.GREEN, body.get(counter-1).getPoint().x, body.get(counter-1).getPoint().y + 20));
+    public synchronized void grow(Pane root) {
+        if(dir == 0) body.add(new Food(color, body.get(counter-1).getPoint().x, body.get(counter-1).getPoint().y - 20));
+        else if(dir == 1) body.add(new Food(color, body.get(counter-1).getPoint().x + 20, body.get(counter-1).getPoint().y));
+        else if(dir == 2) body.add(new Food(color, body.get(counter-1).getPoint().x, body.get(counter-1).getPoint().y + 20));
         else{
-            body.add(new Food(Color.GREEN, body.get(counter-1).getPoint().x - 20, body.get(counter-1).getPoint().y));
+            body.add(new Food(color, body.get(counter-1).getPoint().x - 20, body.get(counter-1).getPoint().y));
         }
         counter++;
-    }
-
-    public Food getHead() {
-        return snakeHead;
     }
 
     public void moveRight(){
