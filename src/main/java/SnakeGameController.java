@@ -99,29 +99,28 @@ public class SnakeGameController {
     }
 
     private void checkCollision() {
-        
-        if(ia != null){
 
-            if(snakeCollision(snake, ia)){
-                end = true;
-                resetGame();
-            }
-
-            if(snakeCollision(ia, snake)){
-                snake.setCounter(ia.getCounter());
-                ia = null;
-            }
-            
-            if(collisionWithFood(ia)){
-                    ia.grow(root);
-                    Random random = new Random();
-                    food = new Food(Color.RED, random.nextInt(760), random.nextInt(510));
-            }
-
-            if (wallCollision(ia) || autoCollision(ia)) {
-                ia = null;
-            }
+        if(ia != null && snakeCollision(snake, ia)){
+            end = true;
+            resetGame();
         }
+        
+
+        if(ia != null && snakeCollision(ia, snake)){
+            snake.setCounter(ia.getCounter());
+            ia = null;
+        }
+        
+        if(ia != null && collisionWithFood(ia)){
+                ia.grow(root);
+                Random random = new Random();
+                food = new Food(Color.RED, random.nextInt(760), random.nextInt(510));
+        }
+
+        if (ia != null && (wallCollision(ia) || autoCollision(ia))) {
+            ia = null;
+        }
+        
 
         if (wallCollision(snake) || autoCollision(snake)) {
             end = true;
@@ -141,6 +140,7 @@ public class SnakeGameController {
             root.getChildren().clear();
 
             snake = new Snake();
+            ia = new Ia(food);
             root.getChildren().add(food.getRectangle());
 
             end = false;
@@ -180,30 +180,37 @@ public class SnakeGameController {
         return headX < 0 || headX >= 780 || headY < 0 || headY >= 550;
     }
 
-    private boolean snakeCollision(Snake s1, Snake s2){
-        List<Food> body = s2.getBody();
-        Food head = s1.getHead();
+    public boolean snakeCollision(Snake snake1, Snake snake2) {
+        Food head1 = snake1.getHead();
     
-        for (int i = 1; i < body.size(); i++) {
-            double bodyX = body.get(i).getPoint().x;
-            double bodyY = body.get(i).getPoint().y;
+        for (int i = 1; i < snake2.getBody().size(); i++) {
+            double bodyX = snake2.getBody().get(i).getPoint().x;
+            double bodyY = snake2.getBody().get(i).getPoint().y;
     
-            if (head.getPoint().x == bodyX && head.getPoint().y == bodyY) {
+            if (head1.getPoint().x == bodyX && head1.getPoint().y == bodyY) {
                 return true;
             }
         }
-            return false;
+    
+        return false;
     }
 
     private void updateScore() {
         root.getChildren().removeIf(node -> node instanceof Text);
-        Text scoreText = new Text("Score: " + snake.getCounter());
-        scoreText.setFill(Color.WHITE);
-        scoreText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        scoreText.setX(700);
-        scoreText.setY(30);
+        Text scoreText1 = new Text("Player: " + snake.getCounter());
+        Text scoreText2 = new Text("Ia: " + ia.getCounter());
+        
+        scoreText1.setFill(Color.WHITE);
+        scoreText1.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        scoreText1.setX(700);
+        scoreText1.setY(30);
 
-        root.getChildren().add(scoreText);
+        scoreText2.setFill(Color.WHITE);
+        scoreText2.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        scoreText2.setX(735);
+        scoreText2.setY(60);
+
+        root.getChildren().addAll(scoreText1, scoreText2);
     }
 
 }
