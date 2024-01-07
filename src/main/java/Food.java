@@ -11,7 +11,7 @@ public class Food {
 
     public Food(Color c, int x, int y) {
         point = new Point(x, y);
-        rectangle = new Rectangle(point.x, point.y,  30, 30);
+        rectangle = new Rectangle(point.x, point.y,  20, 20);
         rectangle.setFill(c);
     }
 

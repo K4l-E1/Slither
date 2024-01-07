@@ -1,51 +1,67 @@
-import javafx.application.Platform;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Point;
+import java.util.Random;
 
 public class Snake {
 
-    private List<Food> body;
+    protected List<Food> body;
     private Food snakeHead;
-    private int dir = 3;
-    int counter = 1;
+    protected int dir = 3;
+    private int DISTANCE_AVANCEMENT = 18;
+    private int counter = 1;
+
 
     public Snake() {
-        body = new ArrayList();
-        body.add(new Food(Color.GREEN, 10, 10));
+        Random random = new Random();
+        body = new ArrayList<Food>();
+        body.add(new Food(Color.GREEN, random.nextInt(600), random.nextInt(400)));
         snakeHead = body.get(0);
     }
 
     public List<Food> getBody() {
-        List<Food> l = new ArrayList();
+        List<Food> l = new ArrayList<Food>();
         for (Food f : body) {
             l.add(f);
         }
         return l;
     }
 
-    public void draw(Pane root) {
-            root.getChildren().clear(); // Effacez le contenu précédent
-        
+    public Food getSnakeHead() {
+        return snakeHead;
+    }
+
+    public int getCounter() {
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
+    }
+
+    public void draw(Pane root) {        
             for (Food f : body) {
                 drawSnakeRectangle((int) f.getPoint().x, (int) f.getPoint().y, root);
             }
     }
     
     private void drawSnakeRectangle(int x, int y, Pane root) {
-        Rectangle rectangle = new Rectangle(x, y, 30, 30);
-        rectangle.setArcWidth(35);
-        rectangle.setArcHeight(35);
+        Rectangle rectangle = new Rectangle(x, y, 20, 20);
+        rectangle.setArcWidth(30);
+        rectangle.setArcHeight(30);
         rectangle.setFill(Color.GREEN);
         root.getChildren().add(rectangle);
     }
 
     public void move() {
+
+        for (int i = body.size() - 1; i > 0; i--) {
+            body.get(i).getPoint().x = body.get(i - 1).getPoint().x;
+            body.get(i).getPoint().y = body.get(i - 1).getPoint().y;
+        }
 
         switch(dir){
             case 0: 
@@ -61,11 +77,6 @@ public class Snake {
                 moveRight();
                 break;
         }
-
-        for (int i = body.size() - 1; i > 0; i--) {
-            body.get(i).getPoint().x = body.get(i - 1).getPoint().x;
-            body.get(i).getPoint().y = body.get(i - 1).getPoint().y;
-        }
     }
 
     public void setDirection(int newDir) {
@@ -78,7 +89,12 @@ public class Snake {
     }
 
     public void grow(Pane root) {
-        body.add(new Food(Color.GREEN, 10, 10));
+        if(dir == 0) body.add(new Food(Color.GREEN, body.get(counter-1).getPoint().x, body.get(counter-1).getPoint().y - 20));
+        else if(dir == 1) body.add(new Food(Color.GREEN, body.get(counter-1).getPoint().x + 20, body.get(counter-1).getPoint().y));
+        else if(dir == 2) body.add(new Food(Color.GREEN, body.get(counter-1).getPoint().x, body.get(counter-1).getPoint().y + 20));
+        else{
+            body.add(new Food(Color.GREEN, body.get(counter-1).getPoint().x - 20, body.get(counter-1).getPoint().y));
+        }
         counter++;
     }
 
@@ -87,22 +103,18 @@ public class Snake {
     }
 
     public void moveRight(){
-        snakeHead.getPoint().setLocation(snakeHead.getPoint().x + 2, snakeHead.getPoint().y);
+        snakeHead.getPoint().setLocation(snakeHead.getPoint().x + DISTANCE_AVANCEMENT, snakeHead.getPoint().y);
     }
 
     public void moveLeft(){
-        snakeHead.getPoint().setLocation(snakeHead.getPoint().x - 2, snakeHead.getPoint().y);
+        snakeHead.getPoint().setLocation(snakeHead.getPoint().x - DISTANCE_AVANCEMENT, snakeHead.getPoint().y);
     }
 
     public void moveUp(){
-        snakeHead.getPoint().setLocation(snakeHead.getPoint().x, snakeHead.getPoint().y - 2);
+        snakeHead.getPoint().setLocation(snakeHead.getPoint().x, snakeHead.getPoint().y - DISTANCE_AVANCEMENT);
     }
 
     void moveDown(){
-        snakeHead.getPoint().setLocation(snakeHead.getPoint().x, snakeHead.getPoint().y + 2);
-    }
-
-    public Food getSnakeHead() {
-        return snakeHead;
+        snakeHead.getPoint().setLocation(snakeHead.getPoint().x, snakeHead.getPoint().y + DISTANCE_AVANCEMENT);
     }
 }
