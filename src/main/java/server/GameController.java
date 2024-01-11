@@ -1,6 +1,7 @@
+package server;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
@@ -12,21 +13,21 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+import common.*;
+
 public class GameController {
 
     private Snake snake;
     private Food food;
     private Pane root;
     private boolean end;
-    private Random random;
     private Ia ia;
     
 
     public GameController() {
         root = new Pane();
         root.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
-        random = new Random();
-        food  = new Food(Color.RED, random.nextInt(750), random.nextInt(500));
+        food  = new Food(Color.RED);
         snake = new Snake(Color.GREEN);
         ia = new Ia(food, Color.ORANGE);
         end = false;      
@@ -46,7 +47,7 @@ public class GameController {
                     updateScore();
                 });
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(80);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -58,8 +59,8 @@ public class GameController {
         return root;
     }
 
-    public List<Food> getBody() {
-        List<Food> body = new ArrayList<>();
+    public List<SnakePart> getBody() {
+        List<SnakePart> body = new ArrayList<>();
         body.addAll(snake.getBody());
         return body;
     }
@@ -105,32 +106,29 @@ public class GameController {
             resetGame();
         }
         
-
-        if(ia != null && snakeCollision(ia, snake)){
+        else if(ia != null && snakeCollision(ia, snake)){
             snake.setCounter(ia.getCounter());
             ia = null;
         }
         
-        if(ia != null && collisionWithFood(ia)){
+        else if(ia != null && collisionWithFood(ia)){
                 ia.grow(root);
-                Random random = new Random();
-                food = new Food(Color.RED, random.nextInt(760), random.nextInt(510));
+                food = new Food(Color.RED);
         }
 
-        if (ia != null && (wallCollision(ia) || autoCollision(ia))) {
+        else if (ia != null && (wallCollision(ia) || autoCollision(ia))) {
             ia = null;
         }
         
 
-        if (wallCollision(snake) || autoCollision(snake)) {
+        else if (wallCollision(snake) || autoCollision(snake)) {
             end = true;
             resetGame();
         }
 
-        if(collisionWithFood(snake)){
+        else if(collisionWithFood(snake)){
                 snake.grow(root);
-                Random random = new Random();
-                food = new Food(Color.RED, random.nextInt(760), random.nextInt(510));
+                food = new Food(Color.RED);
         }
         
     }
@@ -149,7 +147,7 @@ public class GameController {
     }
 
     private boolean collisionWithFood(Snake s) {
-        Food head = s.getSnakeHead();
+        SnakePart head = s.getSnakeHead();
         double headX = head.getPoint().x;
         double headY = head.getPoint().y;
         double foodX = food.getPoint().x;
@@ -160,8 +158,8 @@ public class GameController {
     }
 
     private boolean autoCollision(Snake s) {
-        List<Food> body = s.getBody();
-        Food head = s.getHead();
+        List<SnakePart> body = s.getBody();
+        SnakePart head = s.getHead();
     
         for (int i = 1; i < body.size(); i++) {
             double bodyX = body.get(i).getPoint().x;
@@ -182,7 +180,7 @@ public class GameController {
     }
 
     public boolean snakeCollision(Snake snake1, Snake snake2) {
-        Food head1 = snake1.getHead();
+        SnakePart head1 = snake1.getHead();
     
         for (int i = 1; i < snake2.getBody().size(); i++) {
             double bodyX = snake2.getBody().get(i).getPoint().x;

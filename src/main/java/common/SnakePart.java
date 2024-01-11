@@ -1,15 +1,17 @@
+package common;
+
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.awt.Point;
 
-public class Food {
+public class SnakePart {
 
     private Point point;
     private Rectangle rectangle;
 
-    public Food(Color c, int x, int y) {
+    public SnakePart(Color c, int x, int y) {
         point = new Point(x, y);
         rectangle = new Rectangle(point.x, point.y,  20, 20);
         rectangle.setFill(c);

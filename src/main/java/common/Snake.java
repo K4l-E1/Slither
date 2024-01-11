@@ -1,3 +1,5 @@
+package common;
+
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -8,10 +10,10 @@ import java.util.Random;
 
 public class Snake {
 
-    protected List<Food> body;
-    private Food snakeHead;
+    protected List<SnakePart> body;
+    private SnakePart snakeHead;
     protected int dir = 3;
-    private int DISTANCE_AVANCEMENT = 18;
+    private int DISTANCE_AVANCEMENT = 9;
     private int counter = 1;
     private Color color;
 
@@ -19,28 +21,28 @@ public class Snake {
     public Snake() {
         color = Color.GREEN;
         Random random = new Random();
-        body = new ArrayList<Food>();
-        body.add(new Food(color, random.nextInt(600), random.nextInt(400)));
+        body = new ArrayList<SnakePart>();
+        body.add(new SnakePart(color, random.nextInt(600), random.nextInt(400)));
         snakeHead = body.get(0);
     }
 
     public Snake(Color c) {
         color = c;
         Random random = new Random();
-        body = new ArrayList<Food>();
-        body.add(new Food(color, random.nextInt(600), random.nextInt(400)));
+        body = new ArrayList<SnakePart>();
+        body.add(new SnakePart(color, random.nextInt(600), random.nextInt(400)));
         snakeHead = body.get(0);
     }
 
-    public List<Food> getBody() {
-        List<Food> l = new ArrayList<Food>();
-        for (Food f : body) {
+    public List<SnakePart> getBody() {
+        List<SnakePart> l = new ArrayList<SnakePart>();
+        for (SnakePart f : body) {
             l.add(f);
         }
         return l;
     }
 
-    public Food getSnakeHead() {
+    public SnakePart getSnakeHead() {
         return snakeHead;
     }
 
@@ -56,7 +58,7 @@ public class Snake {
         return color;
     }
 
-    public Food getHead() {
+    public SnakePart getHead() {
         return snakeHead;
     }
 
@@ -65,7 +67,7 @@ public class Snake {
     }
 
     public void draw(Pane root) {        
-            for (Food f : body) {
+            for (SnakePart f : body) {
                 drawSnakeRectangle((int) f.getPoint().x, (int) f.getPoint().y, root);
             }
     }
@@ -87,16 +89,16 @@ public class Snake {
 
         switch(dir){
             case 0: 
-                moveDown();
+                moveDown(); moveDown();
                 break;
             case 1: 
-                moveLeft();
+                moveLeft(); moveLeft();
                 break;
             case 2: 
-                moveUp();
+                moveUp(); moveUp();
                 break;
             case 3: 
-                moveRight();
+                moveRight(); moveRight();
                 break;
         }
     }
@@ -111,11 +113,11 @@ public class Snake {
     }
 
     public synchronized void grow(Pane root) {
-        if(dir == 0) body.add(new Food(color, body.get(counter-1).getPoint().x, body.get(counter-1).getPoint().y - 20));
-        else if(dir == 1) body.add(new Food(color, body.get(counter-1).getPoint().x + 20, body.get(counter-1).getPoint().y));
-        else if(dir == 2) body.add(new Food(color, body.get(counter-1).getPoint().x, body.get(counter-1).getPoint().y + 20));
+        if(dir == 0) body.add(new SnakePart(color, body.get(counter-1).getPoint().x, body.get(counter-1).getPoint().y - 20));
+        else if(dir == 1) body.add(new SnakePart(color, body.get(counter-1).getPoint().x + 20, body.get(counter-1).getPoint().y));
+        else if(dir == 2) body.add(new SnakePart(color, body.get(counter-1).getPoint().x, body.get(counter-1).getPoint().y + 20));
         else{
-            body.add(new Food(color, body.get(counter-1).getPoint().x - 20, body.get(counter-1).getPoint().y));
+            body.add(new SnakePart(color, body.get(counter-1).getPoint().x - 20, body.get(counter-1).getPoint().y));
         }
         counter++;
     }
