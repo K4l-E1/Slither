@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Platform;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -18,30 +21,48 @@ import common.*;
 public class GameController {
 
     private Snake snake;
-    private Food food;
+    private Snake snake2;
+    private Food food = new Food(Color.RED);
     private Pane root;
-    private boolean end;
+    private boolean end, pause;
     private Ia ia;
+    private String mode = "One";
+    private VBox Vbox;
     
 
     public GameController() {
         root = new Pane();
         root.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
-        food  = new Food(Color.RED);
+        root.getChildren().clear();
+
         snake = new Snake(Color.GREEN);
         ia = new Ia(food, Color.ORANGE);
-        end = false;      
+        ia.autoMove(food);            
+        root.getChildren().add(food.getRectangle());
+        pause = false;
+        end = false;
+        
     }
 
     public void startGame() {
         new Thread(() -> {
-            while (!end) {
+            while (!end && !pause) {
                 snake.move();
-                if (ia != null) ia.autoMove(food);
-                checkCollision(); 
+                if (mode == "One"){
+                    ia.autoMove(food);
+                    checkCollision1(); 
+                }
+                else{
+                    if(snake2!=null){
+                        snake2.move();
+                        checkCollision2();
+                    }
+                }
+                
                 Platform.runLater(() -> {
                     root.getChildren().clear();
                     if (ia != null) ia.draw(root);
+                    else snake2.draw(root);
                     snake.draw(root);
                     food.draw(root);
                     updateScore();
@@ -72,6 +93,7 @@ public class GameController {
 
     public void handleKeyPress(KeyCode keyCode) {
         int newDirection = -1;
+        int newDirection2 = -1;
     
         switch (keyCode) {
             case DOWN:
@@ -86,6 +108,20 @@ public class GameController {
             case RIGHT:
                 newDirection = 3; // vers la droite
                 break;
+            case S:
+                newDirection2 = 0; // vers le bas
+                break;
+            case Q:
+                newDirection2 = 1; // vers la gauche
+                break;
+            case Z:
+                newDirection2 = 2; // vers le haut
+                break;
+            case D:
+                newDirection2 = 3; // vers la droite
+                break;
+            case ESCAPE:
+                pause();
             default:
                 break;
         }
@@ -93,39 +129,50 @@ public class GameController {
         if (newDirection != -1) {
             snake.setDir(newDirection);
         }
+
+        if (newDirection2 != -1 && snake2 != null) {
+            snake2.setDir(newDirection2);
+        }
     }
 
     public void stopGame() {
         end = true;
     }
 
-    private void checkCollision() {
+    private void checkCollision1() {
 
-        if(ia != null && snakeCollision(snake, ia)){
+        if(snakeCollision(snake, ia) || wallCollision(snake) || autoCollision(snake)){
             stopGame();
             resetGame();
         }
         
-        else if(ia != null && snakeCollision(ia, snake)){
-            snake.setCounter(ia.getCounter());
+        else if(snakeCollision(ia, snake) || wallCollision(ia) || autoCollision(ia)){
             ia = null;
         }
         
-        else if(ia != null && collisionWithFood(ia)){
+        else if(collisionWithFood(ia)){
                 ia.grow(root);
                 food = new Food(Color.RED);
         }
 
-        else if (ia != null && (wallCollision(ia) || autoCollision(ia))) {
-            ia = null;
+        else if(collisionWithFood(snake)){
+                snake.grow(root);
+                food = new Food(Color.RED);
         }
         
+    }
 
-        else if (wallCollision(snake) || autoCollision(snake)) {
-            end = true;
+    private void checkCollision2() {
+
+        if(snakeCollision(snake, snake2) || snakeCollision(snake2, snake) || wallCollision(snake2) || autoCollision(snake2) || wallCollision(snake) || autoCollision(snake)){
+            stopGame();
             resetGame();
         }
-
+       
+        else if(collisionWithFood(snake2)){
+                snake2.grow(root);
+                food = new Food(Color.RED);
+        }
         else if(collisionWithFood(snake)){
                 snake.grow(root);
                 food = new Food(Color.RED);
@@ -138,10 +185,19 @@ public class GameController {
             root.getChildren().clear();
 
             snake = new Snake(Color.GREEN);
-            ia = new Ia(food, Color.ORANGE);
-            ia.autoMove(food);
+            if (mode == "One"){
+                snake2 = null;
+                ia = new Ia(food, Color.ORANGE);
+                ia.autoMove(food);
+            }
+            else{
+                    ia = null;
+                    snake2 = new Snake(Color.VIOLET);
+            }
+            System.out.println(mode);
+            
             root.getChildren().add(food.getRectangle());
-
+            pause = false;
             end = false;
         });
     }
@@ -216,6 +272,42 @@ public class GameController {
             scoreText2.setY(60);
             root.getChildren().addAll(scoreText2);
         }
+    }
+
+    void pause(){
+        pause = true;
+        
+        Button playButton = new Button("Play");
+        Button PlayersButton;
+        if(mode == "One") PlayersButton = new Button("2 Joueurs");
+        else PlayersButton = new Button("1 Joueur");
+        Button quitButton = new Button("Quitter");
+
+
+
+        Vbox = new VBox(10, playButton, PlayersButton, quitButton);
+        Vbox.setAlignment(Pos.CENTER);
+
+        
+        root.getChildren().add(Vbox);
+
+        playButton.setOnAction(event -> resume());
+        PlayersButton.setOnAction(event -> changeGame());
+        quitButton.setOnAction(event -> Platform.exit());
+    }
+
+    void resume(){
+        root.getChildren().remove(Vbox);
+        pause = false;
+        startGame();
+    }
+
+    void changeGame(){
+        if(mode == "One") mode = "Two";
+        else mode = "One";
+        pause = false;
+        resetGame();
+        startGame();
     }
 
 }
