@@ -13,18 +13,9 @@ public class Snake {
     protected List<SnakePart> body;
     private SnakePart snakeHead;
     protected int dir = 3;
-    private int DISTANCE_AVANCEMENT = 9;
+    private int DISTANCE_AVANCEMENT = 18;
     private int counter = 1;
     private Color color;
-
-
-    public Snake() {
-        color = Color.GREEN;
-        Random random = new Random();
-        body = new ArrayList<SnakePart>();
-        body.add(new SnakePart(color, random.nextInt(600), random.nextInt(400)));
-        snakeHead = body.get(0);
-    }
 
     public Snake(Color c) {
         color = c;
@@ -89,22 +80,22 @@ public class Snake {
 
         switch(dir){
             case 0: 
-                moveDown(); moveDown();
+                moveDown();
                 break;
             case 1: 
-                moveLeft(); moveLeft();
+                moveLeft();
                 break;
             case 2: 
-                moveUp(); moveUp();
+                moveUp();
                 break;
             case 3: 
-                moveRight(); moveRight();
+                moveRight();
                 break;
         }
     }
 
     public void setDir(int newDir) {
-        if ((dir == 0 && newDir != 2) ||  
+        if ((dir == 0 && newDir != 2) ||   // Le snake ne peut aller dans la direction contraire à sa direction actuelle
             (dir == 1 && newDir != 3) || 
             (dir == 2 && newDir != 0) ||
             (dir == 3 && newDir != 1)) {
@@ -112,6 +103,8 @@ public class Snake {
         }
     }
 
+    // La position à laquelle je vais ajouter le nouveau segment de corps dépend de l'orientation de mon snake
+    
     public synchronized void grow(Pane root) {
         if(dir == 0) body.add(new SnakePart(color, body.get(counter-1).getPoint().x, body.get(counter-1).getPoint().y - 20));
         else if(dir == 1) body.add(new SnakePart(color, body.get(counter-1).getPoint().x + 20, body.get(counter-1).getPoint().y));

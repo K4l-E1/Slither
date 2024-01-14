@@ -8,6 +8,8 @@ import java.awt.Point;
 
 public class SnakePart {
 
+    // Cette classe représente les segments de corps du serpent
+
     private Point point;
     private Rectangle rectangle;
 

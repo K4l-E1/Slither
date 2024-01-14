@@ -4,25 +4,27 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import server.GameController;
+import server.GameManager;
+import server.HandleManager;
 
 public class Game extends Application {
 
 
     public void start(Stage primaryStage) {
-     GameController gc = new GameController();
+     
+        GameManager gc = new GameManager();
 
         primaryStage.setTitle("Snake");
         primaryStage.setResizable(false);
-        primaryStage.setOnCloseRequest(event -> gc.stopGame());
+        primaryStage.setOnCloseRequest(event -> GameManager.stopGame());
         primaryStage.setHeight(600);
         primaryStage.setWidth(800);
 
         Pane rootPane = gc.getRoot();
         Scene scene = new Scene(rootPane);
-        scene.setOnKeyPressed(event -> gc.handleKeyPress(event.getCode()));
+        scene.setOnKeyPressed(event -> HandleManager.handleKeyPress(event.getCode()));
         primaryStage.setScene(scene);
-        gc.startGame();
+        GameManager.startGame();
 
         primaryStage.show();
     }
