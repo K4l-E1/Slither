@@ -11,6 +11,6 @@ Fonctionnalitées implémentées:
     1. déplacement d’un seul segment
     2. « IA » 
     3. déplacement d’un serpent
-    4. gestion de la gestion de la mort
+    4. gestion de la mort
     5. gestion de la croissance
     7. 2 joueurs au clavier
